@@ -1,30 +1,30 @@
-var mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
-var bookings = mongoose.model('bookings', {
+const Bookings = mongoose.model('bookings', {
   name: {
-    type:String,
-    required:true,
+    type: String,
+    required: true,
   },
   contactNumber: {
-    type:Number,
-    trim:true
+    type: Number,
+    trim: true,
   },
   seats: {
-    type:Number,
+    type: Number,
 
-    min:1
+    min: 1,
   },
   notes: {
-    type:String,
+    type: String,
   },
   confirmed: {
-    type:Boolean,
-    default:false,
+    type: Boolean,
+    default: false,
   },
   confirmedAt: {
-    type:Number,
-    default:null,
-  }
+    type: Number,
+    default: null,
+  },
 });
 
-module.exports = {bookings}
+module.exports = { Bookings };

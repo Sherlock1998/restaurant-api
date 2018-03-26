@@ -5,6 +5,7 @@ const { mongoose } = require('./db/mongoose');
 const { Bookings } = require('./models/bookings');
 
 const app = express();
+const port = process.env.PORT || 3000;
 
 // bodyParser allows express to post bodies
 app.use(bodyParser.json());
@@ -31,8 +32,8 @@ app.get('/bookings', (req, res) => {
   });
 });
 
-app.listen(3000, () => {
-  console.log('Server started on port 3000');
+app.listen(port, () => {
+  console.log(`Server started on port ${port}`);
 });
 
 module.exports = { app };

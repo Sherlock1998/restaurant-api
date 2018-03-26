@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 
 const { mongoose } = require('./db/mongoose');
 const { Bookings } = require('./models/bookings');
+const { ObjectID } = require('mongodb');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -17,20 +18,47 @@ app.post('/bookings', (req, res) => {
     contactNumber: req.body.contactNumber,
   });
 
-  booking.save().then((doc) => {
-    res.send(doc);
+  booking.save().then((booking) => {
+    res.send(booking);
   }, (e) => {
     res.status(400).send(e);
   });
 });
 
 app.get('/bookings', (req, res) => {
-  Bookings.find().then((bookings) => {
-    res.send({ bookings });
+  Bookings.find().then((booking) => {
+    res.send({ booking });
   }, (e) => {
     res.status(400).send(e);
   });
 });
+
+app.get('/bookings/:id', (req, res) => {
+  const id = req.params.id;
+  if (!ObjectID.isValid(id)) {
+    return res.status(400).send();
+  }
+
+  Bookings.findById().then((booking) => {
+    res.send({ booking });
+  }).catch((e) => {
+    res.status(400).send(e);
+  });
+});
+
+app.delete('/bookings/:id', (req, res) => {
+  const id = req.params.id;
+  if (!ObjectID.isValid(id)) {
+    return res.status(400).send();
+  }
+
+  Bookings.findByIdAndRemove(id).then((booking) => {
+    res.send({ booking });
+  }).catch((e) => {
+    res.status(400).send(e);
+  });
+});
+
 
 app.listen(port, () => {
   console.log(`Server started on port ${port}`);

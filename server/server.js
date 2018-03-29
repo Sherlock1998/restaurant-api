@@ -5,6 +5,7 @@ const { mongoose } = require('./db/mongoose');
 const { Bookings } = require('./models/bookings');
 const { History } = require('./models/history');
 const { ObjectID } = require('mongodb');
+const dateFormat = require('dateformat');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -54,10 +55,13 @@ app.delete('/bookings/:id', (req, res) => {
   }
   // add booking to the history page
   Bookings.findById(id).then((booking) => {
+    const now = new Date();
+    // dont need to include id because it is not used
     const history = new History({
       name: booking.name,
       contactNumber: booking.contactNumber,
-      id,
+      confirmed: true,
+      confirmedAt: dateFormat(now, 'dddd, mmmm dS, yyyy, h:MM:ss TT'),
     });
 
     history.save(booking).then((doc) => {
@@ -68,6 +72,7 @@ app.delete('/bookings/:id', (req, res) => {
   });
 
   // remove booking from bookings page
+
   Bookings.findByIdAndRemove(id).then((booking) => {
     if (!booking) {
       return res.status(404).send();

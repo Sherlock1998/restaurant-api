@@ -22,8 +22,7 @@ const History = mongoose.model('history', {
     default: false,
   },
   confirmedAt: {
-    type: Number,
-    default: null,
+    type: String,
   },
 });
 

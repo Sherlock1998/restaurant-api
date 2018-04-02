@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const History = mongoose.model('history', {
   name: {
     type: String,
-    // required: true,
+    required: true,
   },
   contactNumber: {
     type: Number,
@@ -11,7 +11,6 @@ const History = mongoose.model('history', {
   },
   seats: {
     type: Number,
-
     min: 1,
   },
   notes: {

@@ -11,7 +11,6 @@ const Bookings = mongoose.model('bookings', {
   },
   seats: {
     type: Number,
-
     min: 1,
   },
   notes: {
@@ -22,7 +21,7 @@ const Bookings = mongoose.model('bookings', {
     default: false,
   },
   confirmedAt: {
-    type: Number,
+    type: String,
     default: null,
   },
 });

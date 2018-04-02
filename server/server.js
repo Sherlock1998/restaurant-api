@@ -21,7 +21,7 @@ app.post('/bookings', (req, res) => {
 
   booking.save().then((booking) => {
     res.send(booking);
-  }, (e) => {
+  }).catch((e) => {
     res.status(400).send(e);
   });
 });
@@ -49,10 +49,11 @@ app.get('/bookings/:id', (req, res) => {
 
 app.delete('/bookings/:id', (req, res) => {
   const { id } = req.params;
-  // console.log(res.body);
+
   if (!ObjectID.isValid(id)) {
     return res.status(404).send();
   }
+
   // add booking to the history page
   Bookings.findById(id).then((booking) => {
     const now = new Date();
@@ -64,20 +65,20 @@ app.delete('/bookings/:id', (req, res) => {
       confirmedAt: dateFormat(now, 'dddd, mmmm dS, yyyy, h:MM:ss TT'),
     });
 
-    history.save(booking).then((doc) => {
-      res.send(doc);
-    }, (e) => {
-      res.status(400).send(e);
-    });
+    history.save(booking).then(() => {
+      // res.send({ booking });
+      res.status(200).send();
+    })
+      .catch((e) => {
+        res.status(400).send(e);
+      });
   });
-
   // remove booking from bookings page
 
-  Bookings.findByIdAndRemove(id).then((booking) => {
+  Bookings.findOneAndRemove(id).then((booking) => {
     if (!booking) {
       return res.status(404).send();
     }
-    res.send(booking);
   }).catch((e) => {
     res.status(400).send(e);
   });

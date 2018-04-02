@@ -3,6 +3,7 @@ const request = require('supertest');
 
 const { app } = require('./../server');
 const { Bookings } = require('./../models/bookings');
+const { History } = require('./../models/history');
 
 const testBooking = [{
   name: 'test 1',
@@ -58,14 +59,33 @@ describe('POST/bookings', () => {
   });
 });
 
-describe('GET/Bookings', () => {
+describe('GET/bookings', () => {
   it('Get the list of bookings', (done) => {
     request(app)
-      .get('./bookings')
+      .get('/bookings')
       .expect(200)
       .expect((res) => {
-        expect(res.body.bookings.length).toBe(2);
+        expect(res.body.booking.length).toBe(2);
       })
       .end(done);
   });
+});
+
+describe('DELETE/bookings', () => {
+  it('Save booking to /history', (done) => {
+    const hexId = testBooking[0]._id.toHexString();
+
+
+    request(app)
+      .delete(`/bookings/${hexId}`)
+      .expect(200);
+  });
+
+  // it('Remove a booking', (done) => {
+
+  // });
+
+  // it('Return a 404 if booking is not found', (done) => {
+
+  // });
 });

@@ -19,6 +19,19 @@ app.post('/bookings', (req, res) => {
     contactNumber: req.body.contactNumber,
   });
 
+  app.post('/history', (req, res) => {
+    const booking = new History({
+      name: req.body.name,
+      contactNumber: req.body.contactNumber,
+    });
+
+    booking.save().then((booking) => {
+      res.send(booking);
+    }).catch((e) => {
+      res.status(400).send(e);
+    });
+  });
+
   booking.save().then((booking) => {
     res.send(booking);
   }).catch((e) => {
@@ -28,6 +41,14 @@ app.post('/bookings', (req, res) => {
 
 app.get('/bookings', (req, res) => {
   Bookings.find().then((booking) => {
+    res.send({ booking });
+  }, (e) => {
+    res.status(400).send(e);
+  });
+});
+
+app.get('/history', (req, res) => {
+  History.find().then((booking) => {
     res.send({ booking });
   }, (e) => {
     res.status(400).send(e);

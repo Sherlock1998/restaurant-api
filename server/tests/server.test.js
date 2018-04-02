@@ -4,17 +4,20 @@ const request = require('supertest');
 const { app } = require('./../server');
 const { Bookings } = require('./../models/bookings');
 const { History } = require('./../models/history');
+const { ObjectID } = require('mongodb');
 
-const testBooking = [{
+const testBookings = [{
+  _id: new ObjectID(),
   name: 'test 1',
-  contactNumber: 1234,
+  contactNumber: 1244,
 }, {
+  _id: new ObjectID(),
   name: 'test 2',
   contactNumber: 1234,
 }];
 
 beforeEach((done) => {
-  Bookings.remove({}).then(() => Bookings.insertMany(testBooking)).then(() => done());
+  Bookings.remove({}).then(() => Bookings.insertMany(testBookings)).then(() => History.remove({}).then(() => done()));
 });
 
 describe('POST/bookings', () => {
@@ -73,19 +76,43 @@ describe('GET/bookings', () => {
 
 describe('DELETE/bookings', () => {
   it('Save booking to /history', (done) => {
-    const hexId = testBooking[0]._id.toHexString();
+    request(app)
+      .post('/history')
+      .send(testBookings[0])
+      .expect(200)
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
+        History.find().then((booking) => {
+          done();
+        })
+          .catch(e => done(e));
+      });
+  });
 
+  it('Remove booking from /bookings', (done) => {
+    const hexId = testBookings[0]._id.toHexString();
 
     request(app)
       .delete(`/bookings/${hexId}`)
-      .expect(200);
+      .expect(200)
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
+        Bookings.findById(hexId).then((booking) => {
+          expect(booking).toBeFalsy();
+          done();
+        })
+          .catch(e => done(e));
+      });
   });
 
-  // it('Remove a booking', (done) => {
-
-  // });
-
-  // it('Return a 404 if booking is not found', (done) => {
-
-  // });
+  it('Return a 404 if object ID is invalid', (done) => {
+    request(app)
+      .delete('/bookings/1')
+      .expect(404)
+      .end(done);
+  });
 });

@@ -13,25 +13,14 @@ const port = process.env.PORT || 3000;
 // bodyParser allows express to post bodies
 app.use(bodyParser.json());
 
+// Post to /bookings
 app.post('/bookings', (req, res) => {
   const booking = new Bookings({
     name: req.body.name,
     contactNumber: req.body.contactNumber,
+    seats: req.body.seats,
+    notes: req.body.notes,
   });
-
-  app.post('/history', (req, res) => {
-    const booking = new History({
-      name: req.body.name,
-      contactNumber: req.body.contactNumber,
-    });
-
-    booking.save().then((booking) => {
-      res.send(booking);
-    }).catch((e) => {
-      res.status(400).send(e);
-    });
-  });
-
   booking.save().then((booking) => {
     res.send(booking);
   }).catch((e) => {
@@ -39,6 +28,7 @@ app.post('/bookings', (req, res) => {
   });
 });
 
+// Get from /bookings
 app.get('/bookings', (req, res) => {
   Bookings.find().then((booking) => {
     res.send({ booking });
@@ -47,6 +37,7 @@ app.get('/bookings', (req, res) => {
   });
 });
 
+// Get from /history
 app.get('/history', (req, res) => {
   History.find().then((booking) => {
     res.send({ booking });
@@ -55,8 +46,9 @@ app.get('/history', (req, res) => {
   });
 });
 
+// Get a specific booking
 app.get('/bookings/:id', (req, res) => {
-  const id = req.params.id;
+  const { id } = req.params;
   if (!ObjectID.isValid(id)) {
     return res.status(404).send();
   }
@@ -68,6 +60,7 @@ app.get('/bookings/:id', (req, res) => {
   });
 });
 
+// Delete from /bookings and insert to /history
 app.delete('/bookings/:id', (req, res) => {
   const { id } = req.params;
 
@@ -84,10 +77,11 @@ app.delete('/bookings/:id', (req, res) => {
       contactNumber: booking.contactNumber,
       confirmed: true,
       confirmedAt: dateFormat(now, 'dddd, mmmm dS, yyyy, h:MM:ss TT'),
+      seats: booking.seats,
+      notes: booking.notes,
     });
 
     history.save(booking).then(() => {
-      // res.send({ booking });
       res.status(200).send();
     })
       .catch((e) => {
